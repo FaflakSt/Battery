@@ -13,18 +13,26 @@ import com.example.battery.R;
 public class MainActivity extends AppCompatActivity implements BatteryReceiver.IBattery {
 
     private TextView tvBatteryState;
+    private IntentFilter intentFilter = new IntentFilter();
+    private BatteryReceiver receiver = new BatteryReceiver(this, intentFilter);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         tvBatteryState = findViewById(R.id.tvBatteryState);
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Intent.ACTION_POWER_DISCONNECTED);
-        intentFilter.addAction(Intent.ACTION_POWER_CONNECTED);
-        intentFilter.addAction(Intent.ACTION_BATTERY_LOW);
-        intentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
-        BatteryReceiver receiver = new BatteryReceiver(this);
+        registerReceiver(receiver, intentFilter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(receiver);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         registerReceiver(receiver, intentFilter);
     }
 
